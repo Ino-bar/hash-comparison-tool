@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<noscript>
+    <h1>Please enable JavaScript. This tool uses 100% free JavaScript. View page source for license and code.</h1>
+    <h2>Version 1.0.0<br>Learn how to verify the integrity and authenticity of this tool at the <a href="https://github.com/sprin/TrustyHash">TrustyHash homepage</a>.</h2>
+    <div id="noscript-overlay"></div>
+</noscript>
+    <form action="" method="post" enctype="multipart/form-data">
+
+        <label for="file">Filename:</label>
+        <input type="file" name="file" id="file" />
+
+        <input type="submit" />
+    </form>
+<div data-l10n-id="drop-area-label" id="drop-area">Drop files here</div>
+<p>
+    <input autocomplete="off" type="file" id="fileinput" />
+    <a href="#" onclick="download_table_as_csv('hashTable');">Download as CSV</a>
+    <table id="hashTable">
+        <thead>
+            <tr>
+                <th>
+                    Hash Value
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            </tr>
+        </tbody>
+    </table>
