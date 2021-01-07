@@ -60,12 +60,34 @@ namespace hash_comparison_tool.Controllers
                     dt.Rows.Add(Row);
                     //MyTable.AppendLine("</tr>");
                 }
+                int i = 0;
+                Students students = new Students();
+                
+                foreach (DataRow row in dt.Rows)
+                {
+                    student_data instance = new student_data();
+                    students.StudentList.Add(instance);
+                    object[] entries = row.ItemArray;
+                    students.StudentList[i].Username = entries.ElementAt(0).ToString();
+                    students.StudentList[i].LastName = entries.ElementAt(1).ToString();
+                    students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
+                    students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
+
+                    for (int j = 5; j < entries.Length - 4; j += 6)
+                    {
+                        QuestionSubmissions questionSubmission = new QuestionSubmissions();
+                        questionSubmission.QuestionNumber = entries.ElementAt(j - 2).ToString();
+                        questionSubmission.PaperID = entries.ElementAt(j).ToString();
+                        students.StudentList[i].SubmissionIDs.Add(questionSubmission);
+                    }
+                }
                 //MyTable.AppendLine("</table>");
                 var dataTable = ConvertDataTableToHTML(dt);
                 var jsonDataTable = ConvertDataTabletoJSON(dt);
                 //return Content(MyTable.ToString(), "text/html"); //returns the HTML table
                 return Content(jsonDataTable, "text/json");
                 //return Content(dataTable, "text/html");
+                //return View(dataTable.ToList());
             }
         }
         public string ConvertDataTabletoJSON(DataTable dt)
