@@ -11,8 +11,8 @@ window.addEventListener("load", function () {
     var fileinput = document.getElementById('fileinput');
     fileinput.addEventListener('change', handleFileInputChange);
 
-    var studentSubmissions = document.getElementById('studentSubmissions');
-    studentSubmissions.addEventListener('change', handlestudentSubmissionsChange);
+    //var studentSubmissions = document.getElementById('studentSubmissions');
+    //studentSubmissions.addEventListener('change', handlestudentSubmissionsChange);
 
     // Compute the hash when a file is dropped into the drop area
     var dropArea = document.getElementById('drop-area');
