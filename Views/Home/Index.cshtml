@@ -11,22 +11,15 @@
     <label for="file">Filename:</label>
     <input type="file" name="file" id="file" />
 
-    <input type="submit" />
+    <input type="submit" asp-action="ParseCSV" />
 </form>
-<div data-l10n-id="drop-area-label" id="drop-area">Drop files here</div>
-<p>
-    <input autocomplete="off" type="file" id="fileinput" />
-    <a href="#" onclick="download_table_as_csv('hashTable');">Download as CSV</a>
-    <table id="hashTable">
-        <thead>
-            <tr>
-                <th>
-                    Hash Value
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            </tr>
-        </tbody>
-    </table>
+<form action="" method="post" enctype="multipart/form-data">
+    <input type="hidden" id="fooField" name="fooField" value="bar" />
+        <input type="submit" asp-action="GetHashesPerQuestion" />
+</form>
+    <div data-l10n-id="drop-area-label" id="drop-area">Drop files here</div>
+    <p>
+        <input autocomplete="off" type="file" id="fileinput" />
+        <a href="#" onclick="download_table_as_csv('hashTable');">Download as CSV</a>
+        <button onclick="clearResult()">clear table</button>
+        <div id="container"></div>

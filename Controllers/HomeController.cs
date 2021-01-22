@@ -31,7 +31,7 @@ namespace hash_comparison_tool.Controllers
             Console.WriteLine(filename);
         }
         [HttpPost]
-        public ActionResult Index(IFormFile file)
+        public ActionResult ParseCSV(IFormFile file)
         {
             //StringBuilder MyTable = new StringBuilder(); //This is for creating HTML table from CSV data directly
             DataTable dt = new DataTable();
@@ -89,6 +89,21 @@ namespace hash_comparison_tool.Controllers
                 //return Content(dataTable, "text/html");
                 //return View(dataTable.ToList());
             }
+        }
+        [HttpPost]
+        public void GetHashesPerQuestion()
+        {
+            var generatedHashes = Request.Form["fooField"];
+            Dictionary<string, List<string>> generatedHashesAsDictionary = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(generatedHashes);
+            GeneratedHashes uploadedHashesPerQuestion = new GeneratedHashes();
+            foreach(var entry in generatedHashesAsDictionary)
+            {
+                HashesPerQuestion item = new HashesPerQuestion();
+                item.QuestionNumber = entry.Key;
+                item.PaperIDs = entry.Value;
+                uploadedHashesPerQuestion.GeneratedHashesList.Add(item);
+            }
+
         }
         public string ConvertDataTabletoJSON(DataTable dt)
         {
