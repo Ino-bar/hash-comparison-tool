@@ -251,15 +251,6 @@ function setMyValue(hashes) {
     document.getElementById("fooField").value = hashes;
 }
 
-function hashesToCookie(hashes) {
-    //var cookieValue = hashes;
-    //Cookies.set("hashes", hashes);
-    //var cookieValue = encodeURIComponent(hashes);
-    document.cookie = "questionHashes =" + hashes;
-    console.log(document.cookie)
-    alert(document.cookie)
-}
-
 function mapToObj(inputMap) {
     let obj = {};
     inputMap.forEach(function (value, key) {
@@ -284,7 +275,6 @@ function postJSON(hashes) {
         },
     });
 }
-
 
 function mapToHTMLTable(map) {
     var html = '<div class="row">';
