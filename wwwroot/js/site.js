@@ -38,6 +38,7 @@ window.addEventListener("load", function () {
     dropArea.addEventListener('dragover', handleDropAreaDragover);
     dropArea.addEventListener('drop', handleDropAreaDrop);
 
+    document.addEventListener('change', changeQuestionText);
     // Open the file input prompt when the drop area is clicked
     //dropArea.addEventListener('click', handleDropAreaClick);								 
 
@@ -280,7 +281,7 @@ function mapToHTMLTable(map) {
     var html = '<div class="row">';
     for (var i = 0; i < map.length; i++) {
         html += '<div class="column">';
-        html += '<h3>' + map[i].key + '</h3>';
+        html += '<input type ="text" id="' + i + '" name="questionNumber" value="' + map[i].key + '">';
         for (var k = 0; k < map[i].value.length; k++) {
             html += '<p>' + map[i].value[k] + '</p>';
         }
@@ -289,3 +290,10 @@ function mapToHTMLTable(map) {
     html += '</div>';
     document.getElementById('container').innerHTML = html;
 };
+
+function changeQuestionText(event) {
+    var questionNumber = event.target.id;
+    var newValue = event.target.value;
+    Questions[questionNumber].questionNumber = newValue;
+    mapQuestions();
+}
