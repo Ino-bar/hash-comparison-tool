@@ -1,49 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript">
-    $("#submissionDetails").on('submit', function (event) {
-        event.preventDefault();
-        // create form data
-        var formData = new FormData();
-        //grab the file that was provided by the user
-        var file = $('.file-upload')[0].files[0];
-        // Loop through each of the selected files.
-        formData.append('file', file);
-        if (file) {
-            // Perform the ajax post
-            $.ajax({
-                url: '@Url.Action("ParseCsv")',
-                data: formData,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                success: function (data) {
-                    alert(data);
-                }
-            });
-        }
-    });
-</script>
-<script type="text/javascript">
-            $("#generatedHashes").on('submit', function (event) {
-                event.preventDefault();
-                var formData = new FormData();
-                var data = document.getElementById("fooField").value;
-                formData.set("generatedhashes", data);
-            $.ajax({
-                url: '@Url.Action("GetHashesPerQuestion")',
-                data: formData,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                success: function (data) {
-                    alert(data);
-                }
-            });
-        });
-</script>
 <noscript>
     <h1>Please enable JavaScript. This tool uses 100% free JavaScript. View page source for license and code.</h1>
     <h2>Version 1.0.0<br>Learn how to verify the integrity and authenticity of this tool at the <a href="https://github.com/sprin/TrustyHash">TrustyHash homepage</a>.</h2>
@@ -66,3 +23,46 @@
     <button onclick="clearResult()">clear table</button>
     <div id="container"></div>
 
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+    $("#submissionDetails").on('submit', function (event) {
+        event.preventDefault();
+        // create form data
+        var formData = new FormData();
+        //grab the file that was provided by the user
+        var file = $('.file-upload')[0].files[0];
+        // Loop through each of the selected files.
+        formData.append('file', file);
+        if (file) {
+            // Perform the ajax post
+            $.ajax({
+                url: '@Url.Action("ParseCsv")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        }
+    });
+    </script>
+    <script type="text/javascript">
+            $("#generatedHashes").on('submit', function (event) {
+                event.preventDefault();
+                var formData = new FormData();
+                var data = document.getElementById("fooField").value;
+                formData.set("generatedhashes", data);
+            $.ajax({
+                url: '@Url.Action("GetHashesPerQuestion")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        });
+    </script>

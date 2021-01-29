@@ -106,10 +106,11 @@ namespace hash_comparison_tool.Controllers
             var temp = hashinfo;
             var generatedHashes = Request.Form["generatedHashes"];
             HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
-            HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
+            Dictionary<string, List<string>> QuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
+            //compareHashes(QuestionHashes);
         }
 
-        private void HashesToObjects(Microsoft.Extensions.Primitives.StringValues jsonhashes)
+        private Dictionary<string,List<string>> HashesToObjects(Microsoft.Extensions.Primitives.StringValues jsonhashes)
         {
             Dictionary<string, List<string>> generatedHashesAsDictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(jsonhashes);
             GeneratedHashes uploadedHashesPerQuestion = new GeneratedHashes();
@@ -120,8 +121,22 @@ namespace hash_comparison_tool.Controllers
                 item.PaperIDs = entry.Value;
                 uploadedHashesPerQuestion.GeneratedHashesList.Add(item);
             }
+            return generatedHashesAsDictionary;
         }
 
+        public void compareHashes(Dictionary<string, List<string>> questions)
+        {
+
+            Task[] taskArray = new Task[questions.Count];
+            for(int i = 0; i < taskArray.Length; i++)
+            {
+                taskArray[i] = Task.Factory.StartNew(() =>
+                {
+                    Debug.WriteLine("something");
+                });
+            }
+            Task.WaitAll(taskArray);
+        }
         /*
 public string ConvertDataTabletoJSON(DataTable dt)
 {
