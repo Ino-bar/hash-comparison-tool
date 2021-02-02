@@ -104,9 +104,10 @@ namespace hash_comparison_tool.Controllers
         public void GetHashesPerQuestion(string hashinfo)
         {
             var temp = hashinfo;
-            var generatedHashes = Request.Form["generatedHashes"];
-            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
-            Dictionary<string, List<string>> QuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
+            compareHashes();
+            //var generatedHashes = Request.Form["generatedHashes"];
+            //HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
+            //Dictionary<string, List<string>> QuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
             //compareHashes(QuestionHashes);
         }
 
@@ -124,18 +125,31 @@ namespace hash_comparison_tool.Controllers
             return generatedHashesAsDictionary;
         }
 
-        public void compareHashes(Dictionary<string, List<string>> questions)
+        public void compareHashes()
         {
+            var jsonStudentData = HttpContext.Session.GetString("studentData");
+            var StudentData = JsonConvert.DeserializeObject<List<student_data>>(jsonStudentData);
 
-            Task[] taskArray = new Task[questions.Count];
+            var generatedHashes = Request.Form["generatedHashes"];
+            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
+            Dictionary<string, List<string>> AllQuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
+
+            Task[] taskArray = new Task[AllQuestionHashes.Count];
             for(int i = 0; i < taskArray.Length; i++)
             {
-                taskArray[i] = Task.Factory.StartNew(() =>
-                {
-                    Debug.WriteLine("something");
-                });
+                Debug.Assert(i < taskArray.Length);
+                List<string> questionHashes = AllQuestionHashes.ElementAt(i).Value;
+                taskArray[i] = Task.Factory.StartNew(() => actuallyCompareHashes(StudentData, questionHashes));
             }
             Task.WaitAll(taskArray);
+        }
+        public void actuallyCompareHashes(List<student_data> sd, List<string> qh)
+        {
+            foreach (var hash in qh)
+            {
+                var something = sd.SelectMany(s1 => s1.SubmissionIDs.Where(s2 => s2.PaperID == hash));
+            }
+            Debug.WriteLine("something");
         }
         /*
 public string ConvertDataTabletoJSON(DataTable dt)
