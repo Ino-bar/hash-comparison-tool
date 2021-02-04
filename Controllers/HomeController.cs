@@ -138,18 +138,30 @@ namespace hash_comparison_tool.Controllers
             for(int i = 0; i < taskArray.Length; i++)
             {
                 Debug.Assert(i < taskArray.Length);
-                List<string> questionHashes = AllQuestionHashes.ElementAt(i).Value;
+                Dictionary<string, List<string>> questionHashes = new Dictionary<string, List<string>>(); 
+                questionHashes.Add(AllQuestionHashes.ElementAt(i).Key, AllQuestionHashes.ElementAt(i).Value);
                 taskArray[i] = Task.Factory.StartNew(() => actuallyCompareHashes(StudentData, questionHashes));
             }
             Task.WaitAll(taskArray);
         }
-        public void actuallyCompareHashes(List<student_data> sd, List<string> qh)
+        public List<student_data> actuallyCompareHashes(List<student_data> sd, Dictionary<string, List<string>> qh)
         {
-            foreach (var hash in qh)
+            List<string> hashList = qh.ElementAt(0).Value;
+            List<QuestionSubmissions> somethinglist = new List<QuestionSubmissions>();
+            List<List<QuestionSubmissions>> returnlist = new List<List<QuestionSubmissions>>();
+            foreach (var hash in hashList)
             {
-                var something = sd.SelectMany(s1 => s1.SubmissionIDs.Where(s2 => s2.PaperID == hash));
+                var something = sd.SelectMany(s1 => s1.SubmissionIDs)
+                    .Where(s2 => s2.PaperID == hash);
+                somethinglist = something.ToList();
+                foreach(var result in somethinglist)
+                {
+                    result.QuestionMatch.Add("Match on " + qh.ElementAt(0).Key);
+                }
+                if (somethinglist.Count > 0) returnlist.Add(somethinglist);
             }
-            Debug.WriteLine("something");
+            return sd;
+            //Debug.WriteLine("something");
         }
         /*
 public string ConvertDataTabletoJSON(DataTable dt)
