@@ -41,10 +41,17 @@ window.addEventListener("load", function () {
     document.addEventListener('change', changeQuestionText);
     // Open the file input prompt when the drop area is clicked
     //dropArea.addEventListener('click', handleDropAreaClick);								 
-
+    var csvinput = document.getElementById("CSVSelect");
+    csvinput.addEventListener('change', handleCSVInputChange)
 });
 
 // Event handlers
+
+function handleCSVInputChange() {
+    var csvinput = document.getElementById("CSVSelect");
+    var CSVSubmit = document.getElementById("CSVUpload");
+    CSVSubmit.disabled = csvinput.value == "";
+}
 
 function handleFileInputChange() {
     // Hash a local file when selected via file input.
@@ -66,6 +73,9 @@ function handleDropAreaDragover(evt) {
 function handleDropAreaDrop(evt) {
     // Hash the file that is dropped into the drop area.
     evt.preventDefault();
+    var dropArea = document.getElementById('drop-area');
+    var hashsubmit = document.getElementById('hashsubmit');
+    hashsubmit.disabled = dropArea.value == "";
     hashData = [];
 
     //clearResult();

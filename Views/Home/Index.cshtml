@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model hash_comparison_tool.Models.StudentViewModel
 <noscript>
     <h1>Please enable JavaScript. This tool uses 100% free JavaScript. View page source for license and code.</h1>
     <h2>Version 1.0.0<br>Learn how to verify the integrity and authenticity of this tool at the <a href="https://github.com/sprin/TrustyHash">TrustyHash homepage</a>.</h2>
@@ -9,22 +10,42 @@
 <form action="#" method="post" enctype="multipart/form-data" id="submissionDetails">
 
     <label for="file">Filename:</label>
-    <input type="file" class="file-upload" name="FileUpload" id="file" />
-    <input type="submit" />
+    <input type="file" class="file-upload" name="CSVSelect" id="CSVSelect" />
+    <input type="submit" id="CSVUpload" disabled/>
 </form>
 <form action="#" method="post" enctype="multipart/form-data" id="generatedHashes">
     <input type="hidden" id="fooField" name="fooField" value="bar" />
-    <input type="submit" asp-action="GetHashesPerQuestion" />
+    <input type="submit" id="hashsubmit" disabled asp-action="GetHashesPerQuestion" />
 </form>
 <div data-l10n-id="drop-area-label" id="drop-area">Drop files here</div>
 <p>
     <input autocomplete="off" type="file" id="fileinput" />
     <a href="#" onclick="download_table_as_csv('hashTable');">Download as CSV</a>
     <button onclick="clearResult()">clear table</button>
+    <table>
+        @if(Model.Students != null)
+        { 
+        foreach(var student in Model.Students)
+        {
+        <tr>
+            <td>@student.Username</td>
+            <td>@student.LastName</td>
+            <td>@student.FirstName</td>
+            <td>@student.CID</td>
+            @foreach (var question in student.SubmissionIDs)
+            {
+                <td>@question.QuestionNumber</td>
+                <td>@question.PaperID</td>
+                <td>@question.QuestionMatch.Aggregate((i, j) => i + ", " + j))</td>
+            }
+        </tr>
+        }
+            }
+    </table>
     <div id="container"></div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript">
     $("#submissionDetails").on('submit', function (event) {
         event.preventDefault();
         // create form data
@@ -42,13 +63,13 @@
                 contentType: false,
                 type: 'POST',
                 success: function (data) {
-                    alert(data);
+                    //alert(data);
                 }
             });
         }
     });
-    </script>
-    <script type="text/javascript">
+        </script>
+        <script type="text/javascript">
             $("#generatedHashes").on('submit', function (event) {
                 event.preventDefault();
                 var formData = new FormData();
@@ -61,8 +82,8 @@
                 contentType: false,
                 type: 'POST',
                 success: function (data) {
-                    alert(data);
+                    //alert(data);
                 }
             });
         });
-    </script>
+        </script>

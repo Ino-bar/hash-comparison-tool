@@ -20,52 +20,47 @@ namespace hash_comparison_tool.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
+        StudentViewModel StudentViewModel = new StudentViewModel
+        {
+            Students = new List<student_data>()
+        };
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
+        /*
+ * This is for getting data saved as json out of session
+ * var something = HttpContext.Session.GetString("studentData");
+    var somethingelse = JsonConvert.DeserializeObject<List<student_data>>(something);
+ * 
+ */
         [HttpPost]
         public void ParseCSV(IFormFile file)
         {
-            //StringBuilder MyTable = new StringBuilder(); //This is for creating HTML table from CSV data directly
             DataTable dt = new DataTable();
             using (TextFieldParser parser = new TextFieldParser(file.OpenReadStream()))
             {   
                 bool firstLine = true;
-                //parser.HasFieldsEnclosedInQuotes = true;
-                
                 parser.TextFieldType = FieldType.Delimited;
                 parser.SetDelimiters(",");
-                //MyTable.AppendLine("<table>"); //start of HTML table
                 while(!parser.EndOfData)
                 {
                     string[] Row = parser.ReadFields();
-                    //MyTable.AppendLine("<tr>");
                     if (firstLine) 
                     { 
                             foreach (var Field in Row)
                             {
-                                //MyTable.AppendLine("<td>" + Field + "</td>");
                                 dt.Columns.Add(Field);
                             }
                             firstLine = false;
                             continue;
                     }
                     dt.Rows.Add(Row);
-                    //MyTable.AppendLine("</tr>");
                 }
-
-                //MyTable.AppendLine("</table>");
-                //var dataTable = ConvertDataTableToHTML(dt);
-                //var jsonDataTable = ConvertDataTabletoJSON(dt); can delete method
                 HttpContext.Session.SetString("studentData", dataTableToStudentObjects(dt));
-                //return Content(MyTable.ToString(), "text/html"); //returns the HTML table
-                //return Content(jsonDataTable, "text/json");
-                //return Content(dataTable, "text/html");
-                //return View(dataTable.ToList());
             }
         }
+
         public string dataTableToStudentObjects(DataTable table)
         {
             Students students = new Students();
@@ -93,22 +88,17 @@ namespace hash_comparison_tool.Controllers
             return serialisedData;
         }
 
-        /*
-         * This is for getting data saved as json out of session
-         * var something = HttpContext.Session.GetString("studentData");
-            var somethingelse = JsonConvert.DeserializeObject<List<student_data>>(something);
-         * 
-         */
-
         [HttpPost]
-        public void GetHashesPerQuestion(string hashinfo)
+        public void GetHashesPerQuestion()
         {
-            var temp = hashinfo;
-            compareHashes();
-            //var generatedHashes = Request.Form["generatedHashes"];
-            //HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
-            //Dictionary<string, List<string>> QuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
-            //compareHashes(QuestionHashes);
+            var jsonStudentData = HttpContext.Session.GetString("studentData");
+            var StudentData = JsonConvert.DeserializeObject<List<student_data>>(jsonStudentData);
+
+            var generatedHashes = Request.Form["generatedHashes"];
+            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
+            Dictionary<string, List<string>> AllQuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
+
+            StartHashComparisonTasks(StudentData, AllQuestionHashes);
         }
 
         private Dictionary<string,List<string>> HashesToObjects(Microsoft.Extensions.Primitives.StringValues jsonhashes)
@@ -125,26 +115,22 @@ namespace hash_comparison_tool.Controllers
             return generatedHashesAsDictionary;
         }
 
-        public void compareHashes()
+        public IActionResult StartHashComparisonTasks(List<student_data> StudentData, Dictionary<string, List<string>> AllQuestionHashes)
         {
-            var jsonStudentData = HttpContext.Session.GetString("studentData");
-            var StudentData = JsonConvert.DeserializeObject<List<student_data>>(jsonStudentData);
-
-            var generatedHashes = Request.Form["generatedHashes"];
-            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
-            Dictionary<string, List<string>> AllQuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
-
             Task[] taskArray = new Task[AllQuestionHashes.Count];
             for(int i = 0; i < taskArray.Length; i++)
             {
                 Debug.Assert(i < taskArray.Length);
                 Dictionary<string, List<string>> questionHashes = new Dictionary<string, List<string>>(); 
                 questionHashes.Add(AllQuestionHashes.ElementAt(i).Key, AllQuestionHashes.ElementAt(i).Value);
-                taskArray[i] = Task.Factory.StartNew(() => actuallyCompareHashes(StudentData, questionHashes));
+                taskArray[i] = Task.Factory.StartNew(() => CompareHashes(StudentData, questionHashes));
             }
             Task.WaitAll(taskArray);
+            StudentViewModel.Students = StudentData;
+            return View(StudentViewModel);
         }
-        public List<student_data> actuallyCompareHashes(List<student_data> sd, Dictionary<string, List<string>> qh)
+
+        public void CompareHashes(List<student_data> sd, Dictionary<string, List<string>> qh)
         {
             List<string> hashList = qh.ElementAt(0).Value;
             List<QuestionSubmissions> somethinglist = new List<QuestionSubmissions>();
@@ -160,26 +146,8 @@ namespace hash_comparison_tool.Controllers
                 }
                 if (somethinglist.Count > 0) returnlist.Add(somethinglist);
             }
-            return sd;
-            //Debug.WriteLine("something");
         }
-        /*
-public string ConvertDataTabletoJSON(DataTable dt)
-{
-   List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
-   Dictionary<string, object> row;
-   foreach (DataRow dr in dt.Rows)
-   {
-       row = new Dictionary<string, object>();
-       foreach (DataColumn col in dt.Columns)
-       {
-           row.Add(col.ColumnName, dr[col]);
-       }
-       rows.Add(row);
-   }
-   return System.Text.Json.JsonSerializer.Serialize(rows);
-}
-*/
+
         public static string ConvertDataTableToHTML(DataTable dt)
         {
             string html = "<table>";
@@ -201,7 +169,7 @@ public string ConvertDataTabletoJSON(DataTable dt)
         }
         public IActionResult Index()
         {
-            return View();
+            return View(StudentViewModel);
         }
 
         public IActionResult Privacy()
