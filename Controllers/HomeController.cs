@@ -89,7 +89,7 @@ namespace hash_comparison_tool.Controllers
         }
 
         [HttpPost]
-        public void GetHashesPerQuestion()
+        public ActionResult GetHashesPerQuestion()
         {
             var jsonStudentData = HttpContext.Session.GetString("studentData");
             var StudentData = JsonConvert.DeserializeObject<List<student_data>>(jsonStudentData);
@@ -99,6 +99,7 @@ namespace hash_comparison_tool.Controllers
             Dictionary<string, List<string>> AllQuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
 
             StartHashComparisonTasks(StudentData, AllQuestionHashes);
+            return RedirectToAction("Index", StudentViewModel);
         }
 
         private Dictionary<string,List<string>> HashesToObjects(Microsoft.Extensions.Primitives.StringValues jsonhashes)
@@ -114,8 +115,8 @@ namespace hash_comparison_tool.Controllers
             }
             return generatedHashesAsDictionary;
         }
-
-        public IActionResult StartHashComparisonTasks(List<student_data> StudentData, Dictionary<string, List<string>> AllQuestionHashes)
+        [HttpPost]
+        public void StartHashComparisonTasks(List<student_data> StudentData, Dictionary<string, List<string>> AllQuestionHashes)
         {
             Task[] taskArray = new Task[AllQuestionHashes.Count];
             for(int i = 0; i < taskArray.Length; i++)
@@ -126,8 +127,8 @@ namespace hash_comparison_tool.Controllers
                 taskArray[i] = Task.Factory.StartNew(() => CompareHashes(StudentData, questionHashes));
             }
             Task.WaitAll(taskArray);
+            ModelState.Clear();
             StudentViewModel.Students = StudentData;
-            return View(StudentViewModel);
         }
 
         public void CompareHashes(List<student_data> sd, Dictionary<string, List<string>> qh)

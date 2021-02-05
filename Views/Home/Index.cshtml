@@ -23,20 +23,21 @@
     <a href="#" onclick="download_table_as_csv('hashTable');">Download as CSV</a>
     <button onclick="clearResult()">clear table</button>
     <table>
-        @if(Model.Students != null)
-        { 
+        @if(Model != null)
+        {
+            
         foreach(var student in Model.Students)
         {
         <tr>
-            <td>@student.Username</td>
-            <td>@student.LastName</td>
-            <td>@student.FirstName</td>
-            <td>@student.CID</td>
+            <td>@student.Username.ToString()</td>
+            <td>@student.LastName.ToString()</td>
+            <td>@student.FirstName.ToString()</td>
+            <td>@student.CID.ToString()</td>
             @foreach (var question in student.SubmissionIDs)
             {
-                <td>@question.QuestionNumber</td>
-                <td>@question.PaperID</td>
-                <td>@question.QuestionMatch.Aggregate((i, j) => i + ", " + j))</td>
+                <td>@question.QuestionNumber.ToString()</td>
+                <td>@question.PaperID.ToString()</td>
+                <td>@question.QuestionMatch.Aggregate((i, j) => i + ", " + j)).ToString()</td>
             }
         </tr>
         }
