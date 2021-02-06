@@ -206,7 +206,7 @@ newCell.appendChild(newText);
 }
 */
 
-/* 13-01-21 current display of hashes is not in table form so this function does not apply
+// 13-01-21 current display of hashes is not in table form so this function does not apply
 function download_table_as_csv(table_id, separator = ',') {
 // Select rows from table_id
 var rows = document.querySelectorAll('table#' + table_id + ' tr');
@@ -236,7 +236,7 @@ document.body.appendChild(link);
 link.click();
 document.body.removeChild(link);
 }
-*/
+//
 
 function mapQuestions() {
     var questionsMap = Questions.map(question => ({ key: question.questionNumber, value: question.hashes }))

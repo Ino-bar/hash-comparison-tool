@@ -75,7 +75,7 @@ namespace hash_comparison_tool.Controllers
                 students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
                 students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
 
-                for (int j = 5; j < entries.Length - 3; j += 6)
+                for (int j = 5; j < entries.Length - 4; j += 6)
                 {
                     QuestionSubmissions questionSubmission = new QuestionSubmissions();
                     questionSubmission.QuestionNumber = entries.ElementAt(j - 2).ToString();
@@ -89,17 +89,20 @@ namespace hash_comparison_tool.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetHashesPerQuestion()
+        public void GetHashesPerQuestion()
+        {
+            var generatedHashes = Request.Form["generatedHashes"];
+            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
+        }
+
+        public ActionResult RunComparison()
         {
             var jsonStudentData = HttpContext.Session.GetString("studentData");
             var StudentData = JsonConvert.DeserializeObject<List<student_data>>(jsonStudentData);
-
-            var generatedHashes = Request.Form["generatedHashes"];
-            HttpContext.Session.SetString("submittedfilehashes", generatedHashes);
             Dictionary<string, List<string>> AllQuestionHashes = HashesToObjects(HttpContext.Session.GetString("submittedfilehashes"));
 
             StartHashComparisonTasks(StudentData, AllQuestionHashes);
-            return RedirectToAction("Index", StudentViewModel);
+            return View("Index", StudentViewModel);
         }
 
         private Dictionary<string,List<string>> HashesToObjects(Microsoft.Extensions.Primitives.StringValues jsonhashes)
