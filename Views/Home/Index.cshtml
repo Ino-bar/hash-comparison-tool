@@ -15,11 +15,11 @@
 </form>
 <form action="#" method="post" enctype="multipart/form-data" id="generatedHashes">
     <input type="hidden" id="fooField" name="fooField" value="bar" />
-    <input type="submit" id="hashsubmit" disabled asp-action="GetHashesPerQuestion" />
+    <input type="submit" id="hashsubmit" value="Upload Hashes" disabled asp-action="GetHashesPerQuestion" />
 </form>
 <div data-l10n-id="drop-area-label" id="drop-area">Drop files here</div>
 <form action="#" method="post" enctype="multipart/form-data" id="runComparison">
-    <input type="submit" asp-action="RunComparison" />
+    <input type="submit" id="runComparisonButton" value="Run Comparison" disabled asp-action="RunComparison" />
 </form>
 <p>
     <input autocomplete="off" type="file" id="fileinput" />
@@ -94,6 +94,7 @@
         <script type="text/javascript">
             $("#generatedHashes").on('submit', function (event) {
                 event.preventDefault();
+                document.getElementById('runComparisonButton').disabled = false;
                 var formData = new FormData();
                 var data = document.getElementById("fooField").value;
                 formData.set("generatedhashes", data);
