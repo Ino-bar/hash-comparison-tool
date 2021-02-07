@@ -14,6 +14,8 @@ using Microsoft.VisualBasic.FileIO;
 using System.Text.Json;
 using System.Data;
 using Newtonsoft.Json;
+using System.Net;
+using System.Net.Mime;
 
 namespace hash_comparison_tool.Controllers
 {
@@ -35,7 +37,7 @@ namespace hash_comparison_tool.Controllers
  * 
  */
         [HttpPost]
-        public void ParseCSV(IFormFile file)
+        public ActionResult ParseCSV(IFormFile file)
         {
             DataTable dt = new DataTable();
             using (TextFieldParser parser = new TextFieldParser(file.OpenReadStream()))
@@ -57,7 +59,16 @@ namespace hash_comparison_tool.Controllers
                     }
                     dt.Rows.Add(Row);
                 }
-                HttpContext.Session.SetString("studentData", dataTableToStudentObjects(dt));
+                var studentObjects = dataTableToStudentObjects(dt);
+                if (String.IsNullOrEmpty(studentObjects))
+                {
+                    return Json(new { success = false, responseText = "The attached file does not contain sufficient data. Please upload a new file." });
+                }
+                else 
+                { 
+                    HttpContext.Session.SetString("studentData", dataTableToStudentObjects(dt));
+                    return Json(new { success = true, responseText = "The data was processed successfully." });
+                }
             }
         }
 
@@ -65,27 +76,34 @@ namespace hash_comparison_tool.Controllers
         {
             Students students = new Students();
             int i = 0;
-            foreach (DataRow row in table.Rows)
+            if(table.Rows[0].ItemArray.Length - 4 <= 0)
             {
-                student_data instance = new student_data();
-                students.StudentList.Add(instance);
-                object[] entries = row.ItemArray;
-                students.StudentList[i].Username = entries.ElementAt(0).ToString();
-                students.StudentList[i].LastName = entries.ElementAt(1).ToString();
-                students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
-                students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
-
-                for (int j = 5; j < entries.Length - 4; j += 6)
-                {
-                    QuestionSubmissions questionSubmission = new QuestionSubmissions();
-                    questionSubmission.QuestionNumber = entries.ElementAt(j - 2).ToString();
-                    questionSubmission.PaperID = entries.ElementAt(j).ToString();
-                    students.StudentList[i].SubmissionIDs.Add(questionSubmission);
-                }
-                i += 1;
+                return "";
             }
-            string serialisedData = JsonConvert.SerializeObject(students.StudentList);
-            return serialisedData;
+            else
+            { 
+                foreach (DataRow row in table.Rows)
+                {
+                    student_data instance = new student_data();
+                    students.StudentList.Add(instance);
+                    object[] entries = row.ItemArray;
+                    students.StudentList[i].Username = entries.ElementAt(0).ToString();
+                    students.StudentList[i].LastName = entries.ElementAt(1).ToString();
+                    students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
+                    students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
+
+                    for (int j = 5; j < entries.Length - 4; j += 6)
+                    {
+                        QuestionSubmissions questionSubmission = new QuestionSubmissions();
+                        questionSubmission.QuestionNumber = entries.ElementAt(j - 2).ToString();
+                        questionSubmission.PaperID = entries.ElementAt(j).ToString();
+                        students.StudentList[i].SubmissionIDs.Add(questionSubmission);
+                    }
+                    i += 1;
+                }
+                string serialisedData = JsonConvert.SerializeObject(students.StudentList);
+                return serialisedData;
+            }
         }
 
         [HttpPost]

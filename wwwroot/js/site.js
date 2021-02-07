@@ -48,9 +48,19 @@ window.addEventListener("load", function () {
 // Event handlers
 
 function handleCSVInputChange() {
+    var fileinput = this;
+    let file = fileinput.files[0];
+    var fname = file.name;
+    var re = /(\.csv)$/i;
+    if (!re.exec(fname)) {
+        fileinput.value = '';
+        alert("File extension not supported.");
+    }
+    else {
     var csvinput = document.getElementById("CSVSelect");
     var CSVSubmit = document.getElementById("CSVUpload");
-    CSVSubmit.disabled = csvinput.value == "";
+        CSVSubmit.disabled = csvinput.value == "";
+    }
 }
 
 function handleFileInputChange() {
@@ -87,6 +97,14 @@ function handleDropAreaDrop(evt) {
             .then(showHash)
         //.catch(showHashError);
     }
+}
+
+function RejectFile(message) {
+    var csvinput = document.getElementById("CSVSelect");
+    csvinput.value = "";
+    var CSVSubmit = document.getElementById("CSVUpload");
+    CSVSubmit.disabled = csvinput.value == "";
+    window.alert(message);
 }
 
 function createNewQuestionObject() {
