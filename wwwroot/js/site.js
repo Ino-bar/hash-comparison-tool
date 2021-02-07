@@ -203,7 +203,7 @@ function copyHash() {
 
 function clearResult() {
     //document.getElementById('result').innerHTML = '';
-    document.getElementById('hashTable').getElementsByTagName('tbody')[0].innerHTML = '';
+    document.getElementById('studentData').innerHTML = '';
     column = 0;
 }
 

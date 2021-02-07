@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>hash_comparison_tool</RootNamespace>
+    <UserSecretsId>dbe16651-535c-45b1-af4f-e9ec4bb41cb3</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

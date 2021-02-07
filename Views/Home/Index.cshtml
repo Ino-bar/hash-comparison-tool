@@ -8,10 +8,9 @@
     <div id="noscript-overlay"></div>
 </noscript>
 <form action="#" method="post" enctype="multipart/form-data" id="submissionDetails">
-
     <label for="file">Filename:</label>
     <input type="file" class="file-upload" name="CSVSelect" id="CSVSelect" />
-    <input type="submit" id="CSVUpload" disabled/>
+    <input type="submit" id="CSVUpload" value="Upload Data" disabled/>
 </form>
 <form action="#" method="post" enctype="multipart/form-data" id="generatedHashes">
     <input type="hidden" id="fooField" name="fooField" value="bar" />
@@ -22,7 +21,6 @@
     <input type="submit" id="runComparisonButton" value="Run Comparison" disabled asp-action="RunComparison" />
 </form>
 <p>
-    <input autocomplete="off" type="file" id="fileinput" />
     <a href="#" onclick="download_table_as_csv('studentData');">Download as CSV</a>
     <button onclick="clearResult()">clear table</button>
     <table id="studentData">
