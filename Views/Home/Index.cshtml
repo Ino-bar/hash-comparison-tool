@@ -87,6 +87,9 @@
                 success: function (response) {
                     if (response.success) {
                         alert(response.responseText);
+                        if (document.getElementById('hashsubmit').disabled == false) {
+                            document.getElementById('runComparisonButton').disabled = false;
+                        }
                     } else {
                         document.getElementById('CSVSelect').value = "";
                         alert(response.responseText);
@@ -102,7 +105,9 @@
     <script type="text/javascript">
             $("#generatedHashes").on('submit', function (event) {
                 event.preventDefault();
-                document.getElementById('runComparisonButton').disabled = false;
+                if (document.getElementById('CSVUpload').disabled == false) {
+                    document.getElementById('runComparisonButton').disabled = false;
+                }
                 var formData = new FormData();
                 var data = document.getElementById("fooField").value;
                 formData.set("generatedhashes", data);
