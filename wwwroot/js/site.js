@@ -112,7 +112,6 @@ function createNewQuestionObject() {
     newQuestionHashes.questionNumber = "Question " + (column + 1).toString();
     newQuestionHashes.hashes = hashData;
     Questions.push(newQuestionHashes);
-    QuestionsMap[newQuestionHashes.questionNumber.toString()] = newQuestionHashes.hashes
     mapToHTMLTable(mapQuestions())
     column += 1;
 }
@@ -258,20 +257,11 @@ document.body.removeChild(link);
 
 function mapQuestions() {
     var questionsMap = Questions.map(question => ({ key: question.questionNumber, value: question.hashes }))
-    var jsonArray = JSON.parse(JSON.stringify(Questions))
+    QuestionsMap = new Map();
+    Questions.forEach(function (question) {
+        QuestionsMap[question.questionNumber.toString()] = question.hashes;
+    });
     var jsonArrayString = JSON.stringify(QuestionsMap)
-    console.log(JSON.stringify(jsonArray))
-    console.log(JSON.stringify(Questions))
-    //var dafg = { ...Questions }
-    //console.log(dafg)
-    //var gsfh = Object.assign({}, Questions)
-    //console.log(gsfh)
-    //var fdsg = mapToObj(QuestionsMap)
-    //var afg = JSON.stringify(fdsg)
-    //sessionStorage.setItem("hashes", afg)
-    //let sessionData = sessionStorage.getItem("hashes")
-    //postJSON(jsonArrayString)
-    //hashesToCookie(jsonArrayString)
     setMyValue(jsonArrayString)
     return questionsMap
 };
@@ -289,22 +279,6 @@ function mapToObj(inputMap) {
     return obj;
 }
 
-function postJSON(hashes) {
-    $.ajax({
-        url: appURL.siteURL,
-        type: "POST",
-        data: JSON.stringify(Questions),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (response) {
-            alert(response);
-        },
-        error: function (response) {
-            alert(response.responseText);
-        },
-    });
-}
-
 function mapToHTMLTable(map) {
     var html = '<div class="row">';
     for (var i = 0; i < map.length; i++) {
@@ -320,8 +294,11 @@ function mapToHTMLTable(map) {
 };
 
 function changeQuestionText(event) {
-    var questionNumber = event.target.id;
-    var newValue = event.target.value;
-    Questions[questionNumber].questionNumber = newValue;
-    mapQuestions();
+    if (Questions.length > 0) {
+        console.log(QuestionsMap);
+        var questionNo = event.target.id;
+        var newValue = event.target.value;
+        Questions[questionNo].questionNumber = newValue;
+        mapQuestions();
+    }
 }
