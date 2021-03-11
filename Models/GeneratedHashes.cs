@@ -12,6 +12,6 @@ namespace hash_comparison_tool.Models
     public class HashesPerQuestion
     {
         public string QuestionNumber { get; set; }
-        public List<string> PaperIDs = new List<string>();
+        public List<string> Hashes = new List<string>();
     }
 }

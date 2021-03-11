@@ -20,6 +20,7 @@ var column = 0;
 var Questions = []
 var QuestionsMap = new Map()
 var hashData = [];
+
 class QuestionHashes {
     constructor(questionNumber, hashes) {
         this.questionNumber = questionNumber
@@ -30,8 +31,8 @@ class QuestionHashes {
 window.addEventListener("load", function () {
 
     // Compute the hash when a selection is made with the file input
-    var fileinput = document.getElementById('fileinput');
-    fileinput.addEventListener('change', handleFileInputChange);
+    //var fileinput = document.getElementById('fileinput');
+    //fileinput.addEventListener('change', handleFileInputChange);
 
     // Compute the hash when a file is dropped into the drop area
     var dropArea = document.getElementById('drop-area');
@@ -45,6 +46,14 @@ window.addEventListener("load", function () {
     csvinput.addEventListener('change', handleCSVInputChange)
 });
 
+window.addEventListener("dragover", function (e) {
+    e = e || event;
+    e.preventDefault();
+}, false);
+window.addEventListener("drop", function (e) {
+    e = e || event;
+    e.preventDefault();
+}, false);
 // Event handlers
 
 function handleCSVInputChange() {
@@ -184,11 +193,16 @@ function showHash(hash) {
     var filePath = document.getElementById('fileinput');
     var sha256 = bufferToHex(hash);
     hashData.push(sha256);
+    trackFilesVsHashes()
     newCount.current = newCount.current + 1;
     //var filename = globalFileVariable[i].name;
     //document.getElementById('result').innerHTML =
     //'<h2>SHA-256 Hash</h2><input type="text" id="hashValue" value="" style="width:470px;" readonly><button onclick="copyHash()">Copy hash</button>';
     //document.getElementById('hashValue').value = sha256;
+}
+
+function trackFilesVsHashes() {
+    document.getElementById("count").innerHTML = '<p>File Count: ' + globalFileVariable.length + '</p>' + '<p>Hash Count: ' + hashData.length + '</p>'
 }
 
 function copyHash() {

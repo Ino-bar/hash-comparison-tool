@@ -20,7 +20,7 @@ namespace hash_comparison_tool.Models
     public class QuestionSubmissions
     {
         public string QuestionNumber { get; set; }
-        public string PaperID { get; set; }
+        public string Hash { get; set; }
         public List<string> QuestionMatch = new List<string>();
     }
 }

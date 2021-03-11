@@ -34,7 +34,7 @@
                 @foreach (var question in Model.Students[0].SubmissionIDs)
                 {
                     <th>@question.QuestionNumber.ToString()</th>
-                    <th>Paper ID</th>
+                    <th>Hash</th>
                     <th>Question Match</th>
                 }
             </tr>
@@ -48,7 +48,7 @@
                     @foreach (var question in student.SubmissionIDs)
                     {
                         <td>@question.QuestionNumber.ToString()</td>
-                        <td>@question.PaperID.ToString()</td>
+                        <td>@question.Hash.ToString()</td>
                         if (question.QuestionMatch.Any())
                         {
                             <td>@question.QuestionMatch.Aggregate((i, j) => i + ", " + j)</td>
@@ -62,6 +62,7 @@
             }
         }
     </table>
+    <div id="count"></div>
     <div id="container"></div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">

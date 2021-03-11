@@ -96,7 +96,7 @@ namespace hash_comparison_tool.Controllers
                     {
                         QuestionSubmissions questionSubmission = new QuestionSubmissions();
                         questionSubmission.QuestionNumber = entries.ElementAt(j - 2).ToString();
-                        questionSubmission.PaperID = entries.ElementAt(j).ToString();
+                        questionSubmission.Hash = entries.ElementAt(j).ToString();
                         students.StudentList[i].SubmissionIDs.Add(questionSubmission);
                     }
                     i += 1;
@@ -131,7 +131,7 @@ namespace hash_comparison_tool.Controllers
             {
                 HashesPerQuestion item = new HashesPerQuestion();
                 item.QuestionNumber = entry.Key;
-                item.PaperIDs = entry.Value;
+                item.Hashes = entry.Value;
                 uploadedHashesPerQuestion.GeneratedHashesList.Add(item);
             }
             return generatedHashesAsDictionary;
@@ -160,7 +160,7 @@ namespace hash_comparison_tool.Controllers
             foreach (var hash in hashList)
             {
                 var something = sd.SelectMany(s1 => s1.SubmissionIDs)
-                    .Where(s2 => s2.PaperID == hash);
+                    .Where(s2 => s2.Hash == hash);
                 somethinglist = something.ToList();
                 foreach(var result in somethinglist)
                 {
