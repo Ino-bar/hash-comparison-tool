@@ -87,11 +87,37 @@ namespace hash_comparison_tool.Controllers
                     student_data instance = new student_data();
                     students.StudentList.Add(instance);
                     object[] entries = row.ItemArray;
-                    students.StudentList[i].Username = entries.ElementAt(0).ToString();
-                    students.StudentList[i].LastName = entries.ElementAt(1).ToString();
-                    students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
+                    //students.StudentList[i].Username = entries.ElementAt(0).ToString();
+                    //students.StudentList[i].LastName = entries.ElementAt(1).ToString();
+                    //students.StudentList[i].FirstName = entries.ElementAt(2).ToString();
+                    //students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
+                    students.StudentList[i].Username = row["Username"].ToString();
+                    students.StudentList[i].LastName = row["Last Name"].ToString();
+                    students.StudentList[i].FirstName = row["First Name"].ToString();
                     students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
 
+                    var AnswerColumns = table.Columns.Cast<DataColumn>()
+                                         .Select(x => x.ColumnName).Where(n => n.Contains("Answer")).ToArray();
+                    foreach(string colname in AnswerColumns)
+                    {
+                        var answer = row[colname].ToString();
+                        if (answer.Length == 64 || string.IsNullOrEmpty(answer))
+                        {
+                            
+                            int result = int.Parse(colname.Substring(colname.IndexOf(" ")));
+
+                            QuestionSubmissions questionSubmission = new QuestionSubmissions();
+                            questionSubmission.QuestionNumber = "Question " + result.ToString();
+                            questionSubmission.Hash = answer;
+                            students.StudentList[i].SubmissionIDs.Add(questionSubmission);
+                            //Debug.WriteLine(row[colname].ToString());
+                        }
+                        else if(answer.Length == 7)
+                        {
+                            students.StudentList[i].CID = answer;
+                        }
+                    }
+                    /*
                     for (int j = 5; j < entries.Length - 4; j += 6)
                     {
                         QuestionSubmissions questionSubmission = new QuestionSubmissions();
@@ -99,6 +125,7 @@ namespace hash_comparison_tool.Controllers
                         questionSubmission.Hash = entries.ElementAt(j).ToString();
                         students.StudentList[i].SubmissionIDs.Add(questionSubmission);
                     }
+                    */
                     i += 1;
                 }
                 string serialisedData = JsonConvert.SerializeObject(students.StudentList);
