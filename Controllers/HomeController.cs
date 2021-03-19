@@ -94,16 +94,15 @@ namespace hash_comparison_tool.Controllers
                     students.StudentList[i].Username = row["Username"].ToString();
                     students.StudentList[i].LastName = row["Last Name"].ToString();
                     students.StudentList[i].FirstName = row["First Name"].ToString();
-                    students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
+                   // students.StudentList[i].CID = entries.ElementAt(entries.Length - 4).ToString();
 
                     var AnswerColumns = table.Columns.Cast<DataColumn>()
                                          .Select(x => x.ColumnName).Where(n => n.Contains("Answer")).ToArray();
                     foreach(string colname in AnswerColumns)
                     {
                         var answer = row[colname].ToString();
-                        if (answer.Length == 64 || string.IsNullOrEmpty(answer))
+                        if ((answer.Length == 64 && (answer.IndexOf(' ') <= 0)) || string.IsNullOrEmpty(answer))
                         {
-                            
                             int result = int.Parse(colname.Substring(colname.IndexOf(" ")));
 
                             QuestionSubmissions questionSubmission = new QuestionSubmissions();
@@ -112,7 +111,7 @@ namespace hash_comparison_tool.Controllers
                             students.StudentList[i].SubmissionIDs.Add(questionSubmission);
                             //Debug.WriteLine(row[colname].ToString());
                         }
-                        else if(answer.Length == 7)
+                        else if((answer.Length == 7 || answer.Length == 8) && (answer.IndexOf(' ') <= 0))
                         {
                             students.StudentList[i].CID = answer;
                         }
