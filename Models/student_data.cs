@@ -15,7 +15,7 @@ namespace hash_comparison_tool.Models
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string CID { get; set; }
-        public List<QuestionSubmissions> SubmissionIDs = new List<QuestionSubmissions>();
+        public List<QuestionSubmissions> studentSubmittedHashesPerQuestion = new List<QuestionSubmissions>();
     }
     public class QuestionSubmissions
     {

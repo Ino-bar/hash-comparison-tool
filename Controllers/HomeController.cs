@@ -39,7 +39,7 @@ namespace hash_comparison_tool.Controllers
         [HttpPost]
         public ActionResult ParseCSV(IFormFile file)
         {
-            DataTable dt = new DataTable();
+            DataTable dataTable = new DataTable();
             using (TextFieldParser parser = new TextFieldParser(file.OpenReadStream()))
             {   
                 bool firstLine = true;
@@ -52,21 +52,21 @@ namespace hash_comparison_tool.Controllers
                     { 
                             foreach (var Field in Row)
                             {
-                                dt.Columns.Add(Field);
+                                dataTable.Columns.Add(Field);
                             }
                             firstLine = false;
                             continue;
                     }
-                    dt.Rows.Add(Row);
+                    dataTable.Rows.Add(Row);
                 }
-                var studentObjects = dataTableToStudentObjects(dt);
+                var studentObjects = dataTableToStudentObjects(dataTable);
                 if (String.IsNullOrEmpty(studentObjects))
                 {
                     return Json(new { success = false, responseText = "The attached file does not contain sufficient data. Please upload a new file." });
                 }
                 else 
                 { 
-                    HttpContext.Session.SetString("studentData", dataTableToStudentObjects(dt));
+                    HttpContext.Session.SetString("studentData", dataTableToStudentObjects(dataTable));
                     return Json(new { success = true, responseText = "The data was processed successfully." });
                 }
             }
@@ -74,9 +74,10 @@ namespace hash_comparison_tool.Controllers
 
         public string dataTableToStudentObjects(DataTable table)
         {
-            Students students = new Students();
             int i = 0;
             int j = 0;
+            Students students = new Students();
+
             foreach(DataColumn column in table.Columns)
             {
                 RenameQuestionAndCIDColumns(table, column, j);
@@ -90,18 +91,16 @@ namespace hash_comparison_tool.Controllers
             { 
                 foreach (DataRow row in table.Rows)
                 {
+                    Array questionColumns = table.Columns.Cast<DataColumn>()
+                        .Select(x => x.ColumnName).Where(n => n.Contains("Question") && n.Contains("Hash")).ToArray();
+                    string CIDColumn = table.Columns.Cast<DataColumn>()
+                        .Select(x => x.ColumnName).First(n => n.Contains("CID"));
+                    
                     student_data instance = new student_data();
                     students.StudentList.Add(instance);
-                    object[] entries = row.ItemArray;
                     students.StudentList[i].Username = row["Username"].ToString();
                     students.StudentList[i].LastName = row["Last Name"].ToString();
                     students.StudentList[i].FirstName = row["First Name"].ToString();
-
-                    Array questionColumns = table.Columns.Cast<DataColumn>()
-                     .Select(x => x.ColumnName).Where(n => n.Contains("Question") && n.Contains("Hash")).ToArray();
-                    string CIDColumn = table.Columns.Cast<DataColumn>()
-                                         .Select(x => x.ColumnName).First(n => n.Contains("CID"));
-                    
                     students.StudentList[i].CID = row[row.Table.Columns[CIDColumn].Ordinal + 1].ToString();
 
                     SetStudentQuestionSubmissions(questionColumns, row, students, i);
@@ -137,7 +136,7 @@ namespace hash_comparison_tool.Controllers
                     QuestionSubmissions questionSubmission = new QuestionSubmissions();
                     questionSubmission.QuestionNumber = "Question " + qNumber;
                     questionSubmission.Hash = nextCol.ToString();
-                    students.StudentList[i].SubmissionIDs.Add(questionSubmission);
+                    students.StudentList[i].studentSubmittedHashesPerQuestion.Add(questionSubmission);
                 }
             }
         }
@@ -178,7 +177,6 @@ namespace hash_comparison_tool.Controllers
             Task[] taskArray = new Task[AllQuestionHashes.Count];
             for(int i = 0; i < taskArray.Length; i++)
             {
-                Debug.Assert(i < taskArray.Length);
                 Dictionary<string, List<string>> questionHashes = new Dictionary<string, List<string>>(); 
                 questionHashes.Add(AllQuestionHashes.ElementAt(i).Key, AllQuestionHashes.ElementAt(i).Value);
                 taskArray[i] = Task.Factory.StartNew(() => CompareHashes(StudentData, questionHashes));
@@ -188,21 +186,21 @@ namespace hash_comparison_tool.Controllers
             StudentViewModel.Students = StudentData;
         }
 
-        public void CompareHashes(List<student_data> sd, Dictionary<string, List<string>> qh)
+        public void CompareHashes(List<student_data> studentData, Dictionary<string, List<string>> questionHashes)
         {
-            List<string> hashList = qh.ElementAt(0).Value;
-            List<QuestionSubmissions> somethinglist = new List<QuestionSubmissions>();
+            List<string> hashList = questionHashes.ElementAt(0).Value;
+            List<QuestionSubmissions> questionSubmissionsList = new List<QuestionSubmissions>();
             List<List<QuestionSubmissions>> returnlist = new List<List<QuestionSubmissions>>();
             foreach (var hash in hashList)
             {
-                var something = sd.SelectMany(s1 => s1.SubmissionIDs)
+                var HashMatchQuery = studentData.SelectMany(s1 => s1.studentSubmittedHashesPerQuestion)
                     .Where(s2 => s2.Hash == hash);
-                somethinglist = something.ToList();
-                foreach(var result in somethinglist)
+                questionSubmissionsList = HashMatchQuery.ToList();
+                foreach(var result in questionSubmissionsList)
                 {
-                    result.QuestionMatch.Add("Match on " + qh.ElementAt(0).Key);
+                    result.QuestionMatch.Add("Match on " + questionHashes.ElementAt(0).Key);
                 }
-                if (somethinglist.Count > 0) returnlist.Add(somethinglist);
+                if (questionSubmissionsList.Count > 0) returnlist.Add(questionSubmissionsList);
             }
         }
 
