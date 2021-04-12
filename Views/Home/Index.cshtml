@@ -31,7 +31,7 @@
                 <th>Last Name</th>
                 <th>First Name</th>
                 <th>CID</th>
-                @foreach (var question in Model.Students[0].SubmissionIDs)
+                @foreach (var question in Model.Students[0].studentSubmittedHashesPerQuestion)
                 {
                     <th>@question.QuestionNumber.ToString()</th>
                     <th>Hash</th>
@@ -45,7 +45,7 @@
                     <td>@student.LastName.ToString()</td>
                     <td>@student.FirstName.ToString()</td>
                     <td>@student.CID.ToString()</td>
-                    @foreach (var question in student.SubmissionIDs)
+                    @foreach (var question in student.studentSubmittedHashesPerQuestion)
                     {
                         <td>@question.QuestionNumber.ToString()</td>
                         <td>@question.Hash.ToString()</td>

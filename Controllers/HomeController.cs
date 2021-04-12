@@ -92,7 +92,7 @@ namespace hash_comparison_tool.Controllers
                 foreach (DataRow row in table.Rows)
                 {
                     Array questionColumns = table.Columns.Cast<DataColumn>()
-                        .Select(x => x.ColumnName).Where(n => n.Contains("Question") && n.Contains("Hash")).ToArray();
+                        .Select(x => x.ColumnName).Where(n => n.Contains("Question") && n.Contains("hash")).ToArray();
                     string CIDColumn = table.Columns.Cast<DataColumn>()
                         .Select(x => x.ColumnName).First(n => n.Contains("CID"));
                     
@@ -114,7 +114,7 @@ namespace hash_comparison_tool.Controllers
         public void RenameQuestionAndCIDColumns(DataTable table, DataColumn column, int j)
         {
             List<string> tableAsList = table.AsEnumerable().Select(x => x[j].ToString()).ToList();
-            bool columnIsHashQuestion = tableAsList.Any(s1 => s1.Contains("Hash") && s1.Contains("Question"));
+            bool columnIsHashQuestion = tableAsList.Any(s1 => s1.Contains("hash") && s1.Contains("Question"));
             bool columnIsCIDQuestion = tableAsList.Any(s1 => s1.Contains("CID"));
             if (columnIsHashQuestion)
             {
